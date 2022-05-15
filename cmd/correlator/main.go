@@ -74,4 +74,5 @@ func main() {
 	csv.BuildAndSavePricePlot(cd)
 	csv.BuildAndSaveNormalizedPlot(cd)
 	csv.BuildAndSavePercentagePlot(cd)
+	csv.BuildAndSaveSpreadPlot(cd, 3, 4)
 }
