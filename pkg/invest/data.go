@@ -16,7 +16,7 @@ func getStep(interval investapi.CandleInterval) (step time.Duration) {
 		step = time.Hour * 24 * 7
 		break
 	case investapi.CandleInterval_CANDLE_INTERVAL_DAY:
-		step = time.Hour * 24 * 7
+		step = time.Hour * 24 * 365
 	}
 
 	return step
@@ -24,6 +24,9 @@ func getStep(interval investapi.CandleInterval) (step time.Duration) {
 
 func (s SDK) GetCandles(figi string, from, to time.Time, interval investapi.CandleInterval) ([]*investapi.HistoricCandle, error) {
 	step := getStep(interval)
+	if !from.Add(step).Before(to) {
+		step = to.Sub(from) - time.Second
+	}
 
 	candles := make([]*investapi.HistoricCandle, 0)
 	for i := from.Add(step); i.Before(to); i = i.Add(step) {

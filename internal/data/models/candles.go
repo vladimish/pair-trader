@@ -46,16 +46,19 @@ func (d *CandlesData) Normalize() []float64 {
 
 func (d *CandlesData) Percent() []float64 {
 	data := d.ConvertPrices()
-	res := make([]float64, len(data)-1)
+	res := make([]float64, len(data))
 
-	for i := 1; i < len(data); i++ {
-		if data[i]-data[i-1] > 0 {
-			inc := data[i] - data[i-1]
-			res[i-1] = inc / data[i-1]
+	for i := 0; i < len(data); i++ {
+		inc := 0.0
+		if data[i]-data[0] > 0 {
+			//inc := (data[i] - data[i-1]) * 100
+			inc = (data[i] - data[0]) * 100
 		} else {
-			dec := data[i-1] - data[i]
-			res[i-1] = -dec / data[i-1]
+			//inc := (data[i-1] - data[i]) * -100
+			inc = (data[0] - data[i]) * -100
 		}
+		//res[i-1] = inc / data[i-1]
+		res[i] = inc / data[0]
 	}
 
 	return res

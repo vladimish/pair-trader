@@ -27,7 +27,7 @@ func main() {
 	var cd []models.CandlesData
 	if err != nil {
 		logrus.Info("fetching data...")
-		cd, err = correlations.FetchDataAndComplete(env.E.CFG.Figis, time.Date(2022, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_HOUR)
+		cd, err = correlations.FetchDataAndComplete(env.E.CFG.Figis, time.Date(2015, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_DAY)
 		if err != nil {
 			panic(err)
 		}
@@ -71,6 +71,7 @@ func main() {
 		fc.Write([]byte(t[:len(t)-1] + "\n"))
 	}
 
+	csv.BuildAndSavePricePlot(cd)
 	csv.BuildAndSaveNormalizedPlot(cd)
 	csv.BuildAndSavePercentagePlot(cd)
 }

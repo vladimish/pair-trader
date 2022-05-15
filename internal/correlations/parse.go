@@ -16,7 +16,7 @@ func FetchDataAndComplete(figis []string, from, to time.Time, interval investapi
 	if err != nil {
 		return nil, err
 	}
-	logrus.Info("normalizing data...")
+	logrus.Info("completing data...")
 	AddMissing(d)
 	return d, nil
 }
