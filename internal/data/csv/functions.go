@@ -39,7 +39,7 @@ func BuildAndSavePercentagePlot(cd []models.CandlesData) {
 	writeCsv(cd, percentage, t, "pres.csv")
 }
 
-func BuildAndSaveSpreadPlot(cd []models.CandlesData, i, j int) {
+func BuildAndSaveSpreadPlot(cd []models.CandlesData, i, j int, filename string) {
 	spread := make([]float64, len(cd[i].Candles))
 	t := "," + cd[i].Figi + "-" + cd[j].Figi + ","
 
@@ -49,7 +49,7 @@ func BuildAndSaveSpreadPlot(cd []models.CandlesData, i, j int) {
 		spread[k] = d1[k] - d2[k]
 	}
 
-	writeCsv(cd, [][]float64{spread}, t, "sres.csv")
+	writeCsv(cd, [][]float64{spread}, t, filename)
 }
 
 func writeCsv(cd []models.CandlesData, data [][]float64, t, filename string) error {

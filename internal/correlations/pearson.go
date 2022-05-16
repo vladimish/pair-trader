@@ -1,6 +1,7 @@
 package correlations
 
 import (
+	"github.com/montanaflynn/stats"
 	"github.com/sirupsen/logrus"
 	"github.com/vladimish/pair-trader/internal/data/models"
 	"math/big"
@@ -24,45 +25,62 @@ func BuildCorrelationMatrix(cd []models.CandlesData) [][]float64 {
 }
 
 func FindPearsonCorrelation(x, y []float64) float64 {
-	big.NewFloat(0)
-	var xSum, ySum, xySum, xSqr, ySqr = make(chan *big.Float), make(chan *big.Float), make(chan *big.Float), make(chan *big.Float), make(chan *big.Float)
+	res, err := stats.Correlation(x, y)
+	if err != nil {
+		panic(err)
+	}
 
-	go func(data []float64, res chan *big.Float) {
-		t := sum(data)
-		res <- t
-	}(x, xSum)
-	go func(data []float64, res chan *big.Float) {
-		t := sum(data)
-		res <- t
-	}(y, ySum)
-	go func(xarr, yarr []float64, res chan *big.Float) {
-		t := mulSum(xarr, yarr)
-		res <- t
-	}(x, y, xySum)
-	go func(data []float64, res chan *big.Float) {
-		t := sqrSum(data)
-		res <- t
-	}(x, xSqr)
-	go func(data []float64, res chan *big.Float) {
-		t := sqrSum(data)
-		res <- t
-	}(y, ySqr)
-
-	xr, yr, xyr, xsr, ysr := <-xSum, <-ySum, <-xySum, <-xSqr, <-ySqr
-	//fmt.Println(xr, yr, xyr, xsr, ysr)
-
-	divisor, dividenl, dividenr := big.NewFloat(0), big.NewFloat(0), big.NewFloat(0)
-	divisor.Sub(big.NewFloat(0).Mul(big.NewFloat(float64(len(x))), xyr), big.NewFloat(0).Mul(xr, yr))
-	dividenl = big.NewFloat(0).Sub(big.NewFloat(0).Mul(big.NewFloat(float64(len(x))), xsr), big.NewFloat(0).Mul(xr, xr))
-	dividenr = big.NewFloat(0).Sub(big.NewFloat(0).Mul(big.NewFloat(float64(len(x))), ysr), big.NewFloat(0).Mul(yr, yr))
-
-	r := big.NewFloat(0)
-	r.Quo(divisor, big.NewFloat(0).Sqrt(big.NewFloat(0).Mul(dividenl, dividenr)))
-
-	res, _ := r.Float64()
-	//fmt.Println(res, acc)
 	return res
 }
+
+//
+//func FindPearsonCorrelation(x, y []float64) float64 {
+//	big.NewFloat(0)
+//	var xSum, ySum, xySum, xSqr, ySqr = make(chan *big.Float), make(chan *big.Float), make(chan *big.Float), make(chan *big.Float), make(chan *big.Float)
+//
+//	go func(data []float64, res chan *big.Float) {
+//		t := sum(data)
+//		res <- t
+//	}(x, xSum)
+//	go func(data []float64, res chan *big.Float) {
+//		t := sum(data)
+//		res <- t
+//	}(y, ySum)
+//	go func(xarr, yarr []float64, res chan *big.Float) {
+//		t := mulSum(xarr, yarr)
+//		res <- t
+//	}(x, y, xySum)
+//	go func(data []float64, res chan *big.Float) {
+//		t := sqrSum(data)
+//		res <- t
+//	}(x, xSqr)
+//	go func(data []float64, res chan *big.Float) {
+//		t := sqrSum(data)
+//		res <- t
+//	}(y, ySqr)
+//
+//	xr, yr, xyr, xsr, ysr := <-xSum, <-ySum, <-xySum, <-xSqr, <-ySqr
+//	//fmt.Println(xr, yr, xyr, xsr, ysr)
+//
+//	divisor, dividenl, dividenr := big.NewFloat(0), big.NewFloat(0), big.NewFloat(0)
+//	divisor.Sub(big.NewFloat(0).Mul(big.NewFloat(float64(len(x))), xyr), big.NewFloat(0).Mul(xr, yr))
+//	dividenl = big.NewFloat(0).Sub(big.NewFloat(0).Mul(big.NewFloat(float64(len(x))), xsr), big.NewFloat(0).Mul(xr, xr))
+//	if dividenl.Cmp(big.NewFloat(0)) == -1 {
+//		fmt.Println("блин...")
+//	}
+//	dividenl.Abs(dividenl)
+//	dividenr = big.NewFloat(0).Sub(big.NewFloat(0).Mul(big.NewFloat(float64(len(x))), ysr), big.NewFloat(0).Mul(yr, yr))
+//	if dividenr.Cmp(big.NewFloat(0)) == -1 {
+//		fmt.Println("бля...")
+//	}
+//	dividenr.Abs(divisor)
+//
+//	r := big.NewFloat(0)
+//	r.Quo(divisor, big.NewFloat(0).Sqrt(big.NewFloat(0).Mul(dividenl, dividenr)))
+//
+//	res, _ := r.Float64()
+//	return res
+//}
 
 func sum(arr []float64) (res *big.Float) {
 	res = big.NewFloat(0)

@@ -66,8 +66,35 @@ func (s SDK) GetCandles(figi string, from, to time.Time, interval investapi.Cand
 			if step == 0 {
 				break
 			}
+			if step < time.Hour*24 {
+				break
+			}
 		}
 	}
 
 	return candles, nil
+}
+
+func (s *SDK) ShareTickersToFigis(tickers []string) ([]string, error) {
+	res := make([]string, 0)
+
+	resp, err := s.Instruments.Shares(s.ctx, &investapi.InstrumentsRequest{
+		InstrumentStatus: investapi.InstrumentStatus_INSTRUMENT_STATUS_BASE,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+T:
+	for i := range tickers {
+		for j := range resp.Instruments {
+			if resp.Instruments[j].Ticker == tickers[i] {
+				res = append(res, resp.Instruments[j].Figi)
+				continue T
+			}
+		}
+		logrus.Warn("ticker ", tickers[i], " not found")
+	}
+
+	return res, err
 }

@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	Token string   `json:"-"`
-	Figis []string `json:"figis"`
+	Token   string   `json:"-"`
+	Figis   []string `json:"figis"`
+	Tickers []string `json:"tickers"`
 }
 
 func NewConfig() (*Config, error) {

@@ -3,6 +3,7 @@ module github.com/vladimish/pair-trader
 go 1.18
 
 require (
+	github.com/montanaflynn/stats v0.6.6
 	github.com/sirupsen/logrus v1.8.1
 	github.com/tinkoff/invest-api-go-sdk v1.0.2
 	golang.org/x/exp v0.0.0-20220428152302-39d4317da171

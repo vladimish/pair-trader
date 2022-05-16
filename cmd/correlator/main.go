@@ -16,6 +16,11 @@ import (
 
 func main() {
 	logrus.SetLevel(logrus.DebugLevel)
+	//l, err := os.Create(time.Now().String() + ".log")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//logrus.SetOutput(l)
 
 	logrus.Info("starting bot...")
 	err := env.InitEnv()
@@ -27,7 +32,13 @@ func main() {
 	var cd []models.CandlesData
 	if err != nil {
 		logrus.Info("fetching data...")
-		cd, err = correlations.FetchDataAndComplete(env.E.CFG.Figis, time.Date(2015, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_DAY)
+		figis, err := env.E.SDK.ShareTickersToFigis(env.E.CFG.Tickers)
+		if err != nil {
+			panic(err)
+		}
+		figis = append(figis, env.E.CFG.Figis...)
+
+		cd, err = correlations.FetchDataAndComplete(figis, time.Date(2015, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_DAY)
 		if err != nil {
 			panic(err)
 		}
@@ -42,12 +53,17 @@ func main() {
 		}
 		df.Write(res)
 	} else {
+		logrus.Info("loading data...")
 		bytes, err := io.ReadAll(df)
 		if err != nil {
 			panic(err)
 		}
 
+		logrus.Info("marshaling data...")
 		err = json.Unmarshal(bytes, &cd)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	logrus.Info("building correlation matrix...")
@@ -74,5 +90,10 @@ func main() {
 	csv.BuildAndSavePricePlot(cd)
 	csv.BuildAndSaveNormalizedPlot(cd)
 	csv.BuildAndSavePercentagePlot(cd)
-	csv.BuildAndSaveSpreadPlot(cd, 3, 4)
+
+	for i := 0; i < len(cd)-1; i++ {
+		for j := i + 1; j < len(cd); j++ {
+			csv.BuildAndSaveSpreadPlot(cd, i, j, cd[i].Figi+"-"+cd[j].Figi+".csv")
+		}
+	}
 }

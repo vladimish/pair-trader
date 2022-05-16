@@ -17,12 +17,12 @@ func FetchDataAndComplete(figis []string, from, to time.Time, interval investapi
 		return nil, err
 	}
 	logrus.Info("completing data...")
-	AddMissing(d)
+	d = AddMissing(d)
 	return d, nil
 }
 
 func FetchData(figis []string, from, to time.Time, interval investapi.CandleInterval) ([]models.CandlesData, error) {
-	cd := make([]models.CandlesData, len(env.E.CFG.Figis))
+	cd := make([]models.CandlesData, len(figis))
 	for i, s := range figis {
 		logrus.Infof("getting %s candles...", s)
 		candles, err := env.E.SDK.GetCandles(s, from, to, interval)
@@ -41,7 +41,14 @@ func FetchData(figis []string, from, to time.Time, interval investapi.CandleInte
 	return cd, nil
 }
 
-func AddMissing(cd []models.CandlesData) {
+func AddMissing(cd []models.CandlesData) []models.CandlesData {
+	for i := 0; i < len(cd); i++ {
+		if len(cd[i].Candles) == 0 {
+			cd = append(cd[:i], cd[i+1:]...)
+			i--
+		}
+	}
+
 	for i := 0; i < len(cd)-1; i++ {
 		for j := i; j < len(cd); j++ {
 			if j == i {
@@ -68,11 +75,12 @@ func AddMissing(cd []models.CandlesData) {
 
 	// Get rid of the first candle of each stock
 	// because it was only used to add missing data.
-	for i := range cd {
+	for i := 0; i < len(cd); i++ {
 		//fmt.Println(len(cd[i].Candles))
 		cd[i].Candles = cd[i].Candles[1:]
 	}
 
+	return cd
 }
 
 func insert(candles []*investapi.HistoricCandle, timeCandles []*investapi.HistoricCandle, k int) []*investapi.HistoricCandle {
