@@ -7,15 +7,18 @@ import (
 	investapi "github.com/tinkoff/invest-api-go-sdk"
 	"github.com/vladimish/pair-trader/internal/correlations"
 	"github.com/vladimish/pair-trader/internal/data/csv"
+	"github.com/vladimish/pair-trader/internal/data/excel"
 	"github.com/vladimish/pair-trader/internal/data/models"
 	"github.com/vladimish/pair-trader/internal/env"
+	"github.com/vladimish/pair-trader/internal/stats"
 	"io"
 	"os"
+	"sync"
 	"time"
 )
 
 func main() {
-	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetLevel(logrus.InfoLevel)
 	//l, err := os.Create(time.Now().String() + ".log")
 	//if err != nil {
 	//	panic(err)
@@ -38,7 +41,7 @@ func main() {
 		}
 		figis = append(figis, env.E.CFG.Figis...)
 
-		cd, err = correlations.FetchDataAndComplete(figis, time.Date(2015, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_DAY)
+		cd, err = correlations.FetchDataAndComplete(figis, time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_DAY)
 		if err != nil {
 			panic(err)
 		}
@@ -91,9 +94,24 @@ func main() {
 	csv.BuildAndSaveNormalizedPlot(cd)
 	csv.BuildAndSavePercentagePlot(cd)
 
+	logrus.Info("building spread plots...")
+	wg := sync.WaitGroup{}
 	for i := 0; i < len(cd)-1; i++ {
 		for j := i + 1; j < len(cd); j++ {
-			csv.BuildAndSaveSpreadPlot(cd, i, j, cd[i].Figi+"-"+cd[j].Figi+".csv")
+			if rs[i][j] > 0.98 {
+				wg.Add(1)
+				go func(i, j int) {
+					fmt.Println(cd[i].Figi, cd[j].Figi, i, j)
+					s, t := stats.BuildSpreadPlot(cd[i], cd[j])
+					err := excel.SaveSpread(s, t, cd[i].Figi+"-"+cd[j].Figi)
+					if err != nil {
+						logrus.Error(err)
+					}
+					wg.Done()
+				}(i, j)
+			}
 		}
 	}
+
+	wg.Wait()
 }

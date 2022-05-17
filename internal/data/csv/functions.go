@@ -14,7 +14,7 @@ func BuildAndSavePricePlot(cd []models.CandlesData) {
 		prices[i] = cd[i].ConvertPrices()
 	}
 
-	writeCsv(cd, prices, t, "res.csv")
+	WriteCSV(cd, prices, t, "res.csv")
 }
 
 func BuildAndSaveNormalizedPlot(cd []models.CandlesData) {
@@ -25,7 +25,7 @@ func BuildAndSaveNormalizedPlot(cd []models.CandlesData) {
 		normalized[i] = cd[i].Normalize()
 	}
 
-	writeCsv(cd, normalized, t, "nres.csv")
+	WriteCSV(cd, normalized, t, "nres.csv")
 }
 
 func BuildAndSavePercentagePlot(cd []models.CandlesData) {
@@ -36,23 +36,10 @@ func BuildAndSavePercentagePlot(cd []models.CandlesData) {
 		percentage[i] = cd[i].Percent()
 	}
 
-	writeCsv(cd, percentage, t, "pres.csv")
+	WriteCSV(cd, percentage, t, "pres.csv")
 }
 
-func BuildAndSaveSpreadPlot(cd []models.CandlesData, i, j int, filename string) {
-	spread := make([]float64, len(cd[i].Candles))
-	t := "," + cd[i].Figi + "-" + cd[j].Figi + ","
-
-	d1 := cd[i].Percent()
-	d2 := cd[j].Percent()
-	for k := range cd[i].Candles {
-		spread[k] = d1[k] - d2[k]
-	}
-
-	writeCsv(cd, [][]float64{spread}, t, filename)
-}
-
-func writeCsv(cd []models.CandlesData, data [][]float64, t, filename string) error {
+func WriteCSV(cd []models.CandlesData, data [][]float64, t, filename string) error {
 	fn, err := os.Create(filename)
 	if err != nil {
 		return err
