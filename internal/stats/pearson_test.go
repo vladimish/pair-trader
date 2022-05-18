@@ -1,4 +1,4 @@
-package correlations
+package stats
 
 import (
 	"testing"

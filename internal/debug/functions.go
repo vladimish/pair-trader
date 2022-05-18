@@ -1,12 +1,12 @@
-package csv
+package debug
 
 import (
 	"fmt"
-	"github.com/vladimish/pair-trader/internal/data/models"
+	"github.com/vladimish/pair-trader/internal/models"
 	"os"
 )
 
-func BuildAndSavePricePlot(cd []models.CandlesData) {
+func BuildAndSavePricePlot(cd []models.CandlesData) error {
 	prices := make([][]float64, len(cd))
 	t := ","
 	for i := range cd {
@@ -14,10 +14,10 @@ func BuildAndSavePricePlot(cd []models.CandlesData) {
 		prices[i] = cd[i].ConvertPrices()
 	}
 
-	WriteCSV(cd, prices, t, "res.csv")
+	return WriteCSV(cd, prices, t, "res.csv")
 }
 
-func BuildAndSaveNormalizedPlot(cd []models.CandlesData) {
+func BuildAndSaveNormalizedPlot(cd []models.CandlesData) error {
 	normalized := make([][]float64, len(cd))
 	t := ","
 	for i := range cd {
@@ -25,10 +25,10 @@ func BuildAndSaveNormalizedPlot(cd []models.CandlesData) {
 		normalized[i] = cd[i].Normalize()
 	}
 
-	WriteCSV(cd, normalized, t, "nres.csv")
+	return WriteCSV(cd, normalized, t, "nres.csv")
 }
 
-func BuildAndSavePercentagePlot(cd []models.CandlesData) {
+func BuildAndSavePercentagePlot(cd []models.CandlesData) error {
 	percentage := make([][]float64, len(cd))
 	t := ","
 	for i := range cd {
@@ -36,7 +36,7 @@ func BuildAndSavePercentagePlot(cd []models.CandlesData) {
 		percentage[i] = cd[i].Percent()
 	}
 
-	WriteCSV(cd, percentage, t, "pres.csv")
+	return WriteCSV(cd, percentage, t, "pres.csv")
 }
 
 func WriteCSV(cd []models.CandlesData, data [][]float64, t, filename string) error {

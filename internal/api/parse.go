@@ -1,10 +1,10 @@
-package correlations
+package api
 
 import (
 	"github.com/sirupsen/logrus"
 	investapi "github.com/tinkoff/invest-api-go-sdk"
-	"github.com/vladimish/pair-trader/internal/data/models"
 	"github.com/vladimish/pair-trader/internal/env"
+	"github.com/vladimish/pair-trader/internal/models"
 	"github.com/vladimish/pair-trader/internal/utils"
 	"golang.org/x/exp/slices"
 	"time"

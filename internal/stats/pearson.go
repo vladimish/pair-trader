@@ -1,9 +1,9 @@
-package correlations
+package stats
 
 import (
 	"github.com/montanaflynn/stats"
 	"github.com/sirupsen/logrus"
-	"github.com/vladimish/pair-trader/internal/data/models"
+	"github.com/vladimish/pair-trader/internal/models"
 )
 
 func BuildCorrelationMatrix(cd []models.CandlesData) [][]float64 {

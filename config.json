@@ -1,5 +1,5 @@
 {
-  "tickers": [
+  "tickerss": [
     "A",
     "AAL",
     "AAP",
@@ -507,5 +507,10 @@
     "ZTS"
   ],
   "figis": [
+    "BBG000B9XRY4",
+    "BBG009S39JX6",
+    "BBG000MM2P62",
+    "BBG000CL9VN6",
+    "BBG000BVPV84"
   ]
 }

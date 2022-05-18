@@ -1,6 +1,8 @@
 package stats
 
-import "github.com/vladimish/pair-trader/internal/data/models"
+import (
+	"github.com/vladimish/pair-trader/internal/models"
+)
 
 func BuildSpreadPlot(x, y models.CandlesData) (spread []float64, time []int64) {
 	if len(x.Candles) != len(y.Candles) {
