@@ -55,7 +55,7 @@ func AddMissing(cd []models.CandlesData) []models.CandlesData {
 				continue
 			}
 		K:
-			for k := 1; k < len(cd[i].Candles); k++ {
+			for k := 0; k < len(cd[i].Candles); k++ {
 				if k == len(cd[j].Candles) {
 					for ; k < len(cd[i].Candles); k++ {
 						cd[j].Candles = insert(cd[j].Candles, cd[i].Candles, k)
@@ -84,13 +84,18 @@ func AddMissing(cd []models.CandlesData) []models.CandlesData {
 }
 
 func insert(candles []*investapi.HistoricCandle, timeCandles []*investapi.HistoricCandle, k int) []*investapi.HistoricCandle {
+	knownIndex := k - 1
+	if k == 0 {
+		knownIndex = 1
+	}
+
 	return slices.Insert(candles, k, &investapi.HistoricCandle{
-		Open:       candles[k-1].GetClose(),
-		High:       candles[k-1].GetClose(),
-		Low:        candles[k-1].GetClose(),
-		Close:      candles[k-1].GetClose(),
+		Open:       candles[knownIndex].GetClose(),
+		High:       candles[knownIndex].GetClose(),
+		Low:        candles[knownIndex].GetClose(),
+		Close:      candles[knownIndex].GetClose(),
 		Volume:     0,
 		Time:       timeCandles[k].GetTime(),
-		IsComplete: candles[k-1].GetIsComplete(),
+		IsComplete: candles[knownIndex].GetIsComplete(),
 	})
 }

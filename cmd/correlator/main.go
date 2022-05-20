@@ -40,7 +40,7 @@ func main() {
 		}
 		figis = append(figis, env.E.CFG.Figis...)
 
-		cd, err = api.FetchDataAndComplete(figis, time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_HOUR)
+		cd, err = api.FetchDataAndComplete(figis, time.Date(2017, time.January, 1, 0, 0, 0, 0, time.UTC), time.Now(), investapi.CandleInterval_CANDLE_INTERVAL_DAY)
 		if err != nil {
 			panic(err)
 		}
@@ -69,6 +69,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		cd = api.AddMissing(cd)
 	}
 
 	logrus.Info("building correlation matrix...")
@@ -119,7 +121,7 @@ func main() {
 		for j := i + 1; j < len(cd); j++ {
 			wg.Add(1)
 			go func(i, j int) {
-				if rs[i][j] > 0.7 {
+				if rs[i][j] > env.E.CFG.Params.MinCorrelation {
 					name := cd[i].Figi + "-" + cd[j].Figi
 					//fmt.Println(cd[i].Figi, cd[j].Figi, i, j)
 					s, t := stats.BuildSpreadPlot(cd[i], cd[j])

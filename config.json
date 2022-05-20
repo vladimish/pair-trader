@@ -1,5 +1,8 @@
 {
-  "tickerss": [
+  "params": {
+    "minCorrelation": 0.98
+  },
+  "tickers": [
     "A",
     "AAL",
     "AAP",
@@ -506,7 +509,7 @@
     "ZION",
     "ZTS"
   ],
-  "figis": [
+  "figiss": [
     "BBG000B9XRY4",
     "BBG009S39JX6",
     "BBG000MM2P62",

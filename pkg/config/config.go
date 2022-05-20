@@ -7,6 +7,9 @@ import (
 )
 
 type Config struct {
+	Params struct {
+		MinCorrelation float64 `json:"minCorrelation"`
+	} `json:"params"`
 	Token   string   `json:"-"`
 	Figis   []string `json:"figis"`
 	Tickers []string `json:"tickers"`
