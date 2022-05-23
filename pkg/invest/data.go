@@ -98,3 +98,14 @@ T:
 
 	return res, err
 }
+
+func (s *SDK) GetLastPrices(figis []string) ([]*investapi.LastPrice, error) {
+	res, err := s.MarketData.GetLastPrices(s.ctx, &investapi.GetLastPricesRequest{
+		Figi: figis,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return res.GetLastPrices(), nil
+}

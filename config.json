@@ -1,6 +1,6 @@
 {
   "params": {
-    "minCorrelation": 0.98
+    "minCorrelation": 0.99
   },
   "tickers": [
     "A",

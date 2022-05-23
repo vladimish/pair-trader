@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func FetchDataAndComplete(figis []string, from, to time.Time, interval investapi.CandleInterval) ([]models.CandlesData, error) {
+func FetchDataAndAddMissing(figis []string, from, to time.Time, interval investapi.CandleInterval) ([]models.CandlesData, error) {
 	logrus.Info("getting historic candles...")
 	d, err := FetchData(figis, from, to, interval)
 	if err != nil {

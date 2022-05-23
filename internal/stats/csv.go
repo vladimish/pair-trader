@@ -1,10 +1,30 @@
-package debug
+package stats
 
 import (
 	"fmt"
 	"github.com/vladimish/pair-trader/internal/models"
 	"os"
 )
+
+func SaveCorrelationPlot(rs [][]float64, cd []models.CandlesData) error {
+	fc, err := os.Create("cor.csv")
+	if err != nil {
+		return err
+	}
+
+	for i := range rs {
+		t := cd[i].Figi + ","
+		for j := range rs[i] {
+			t += fmt.Sprintf("%f,", rs[i][j])
+		}
+		_, err = fc.Write([]byte(t[:len(t)-1] + "\n"))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func BuildAndSavePricePlot(cd []models.CandlesData) error {
 	prices := make([][]float64, len(cd))
@@ -56,6 +76,34 @@ func WriteCSV(cd []models.CandlesData, data [][]float64, t, filename string) err
 			t += fmt.Sprintf("%f,", data[j][i])
 		}
 		_, err = fn.Write([]byte(t[:len(t)-1] + "\n"))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func SaveTime(cd []models.CandlesData, path string) error {
+	f, _ := os.Create(path)
+
+	for i := range cd {
+		_, err := f.Write([]byte(fmt.Sprintf("%s,", cd[i].Figi)))
+		if err != nil {
+			return err
+		}
+	}
+	_, err := f.Write([]byte("\n"))
+	if err != nil {
+		return err
+	}
+
+	for i := range cd[0].Candles {
+		t := ""
+		for j := range cd {
+			t += fmt.Sprintf("%d,", cd[j].Candles[i].Time.Seconds)
+		}
+		_, err := f.Write([]byte(t[:len(t)-1] + "\n"))
 		if err != nil {
 			return err
 		}
